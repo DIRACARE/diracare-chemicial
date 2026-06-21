@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIRACARE OPERATIONAL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #0f172a;
+            color: #f8fafc;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.9);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(51, 65, 85, 0.8);
+        }
+        .tab-active {
+            background: linear-gradient(135deg, #1d4ed8 0%, #0369a1 100%);
+            color: white;
+            box-shadow: 0 4px 14px rgba(29, 78, 216, 0.4);
+            border: 1px solid #3b82f6;
+        }
+        .tab-inactive {
+            background: #1e293b;
+            color: #94a3b8;
+            border: 1px solid #334155;
+        }
+        .subtab-active {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+        }
+        .subtab-inactive {
+            background-color: #1e293b;
+            color: #94a3b8;
+            border: 1px solid #334155;
+        }
+        th, td {
+            border: 1px solid #334155;
+            padding: 10px 8px;
+            text-align: center;
+            white-space: nowrap;
+        }
+        th {
+            font-weight: 700;
+            color: #f8fafc;
+            background-color: #1e293b;
+        }
+        input, select, textarea {
+            font-size: 16px !important;
+        }
+    </style>
+</head>
+<body class="pb-16 min-h-screen" onload="ambilDataDariSheets()">
+
+    <header class="glass-card sticky top-0 z-50 border-b border-slate-700/80 px-4 py-4 bg-slate-900/95 backdrop-blur-md">
+        <div class="max-w-6xl mx-auto flex flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-white p-1.5 rounded-2xl border border-slate-700 flex items-center justify-center shadow-md shadow-blue-500/10 shrink-0">
+                    <img src="Logo diracare png.png" alt="DiraCare Logo" class="h-14 w-auto object-contain">
+                </div>
+                <div>
+                    <h1 class="text-sm font-black tracking-wider text-blue-400 uppercase leading-none mb-1">DIRACARE OPERATIONAL</h1>
+                    <p class="text-[10px] text-slate-400 font-medium">Sistem Cloud Operasional Berpisah v8.1</p>
+                </div>
+            </div>
+            <div class="shrink-0">
+                <span id="statusKoneksi" class="inline-flex items-center gap-1.5 bg-emerald-950/80 text-emerald-400 text-[10px] font-bold px-3 py-1.5 rounded-full border border-emerald-800">
+                    <span id="bulletKoneksi" class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span id="teksKoneksi">Sheets Syncing...</span>
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-3 mt-6">
+
+        <div class="grid grid-cols-3 gap-2 mb-6 max-w-xl mx-auto">
+            <button id="btnMenu1" onclick="pindahMenu(1)" class="tab-active py-3.5 text-xs font-bold rounded-xl text-center transition-all cursor-pointer">
+                📝 1. Input Data
+            </button>
+            <button id="btnMenu2" onclick="pindahMenu(2)" class="tab-inactive py-3.5 text-xs font-bold rounded-xl text-center transition-all cursor-pointer hover:bg-slate-800">
+                📋 2. Tabel Laporan
+            </button>
+            <button id="btnMenu3" onclick="pindahMenu(3)" class="tab-inactive py-3.5 text-xs font-bold rounded-xl text-center cursor-pointer hover:bg-slate-800">
+                📊 3. Dashboard
+            </button>
+        </div>
+
+        <div id="panelMenu1" class="space-y-6 max-w-xl mx-auto">
+            
+            <div class="glass-card p-5 sm:p-6 rounded-2xl shadow-xl bg-slate-900/60 border-t-4 border-t-blue-500">
+                <div class="flex items-center gap-3 border-b border-slate-800 pb-3 mb-4">
+                    <div class="text-blue-400 text-xl">🧪</div>
+                    <div>
+                        <h2 class="text-sm font-bold text-white">Form A: Pemakaian Chemical & Hasil Kerja</h2>
+                        <p class="text-[11px] text-slate-400">Gunakan form ini untuk mencatat bahan kimia pencucian harian.</p>
+                    </div>
+                </div>
+                
+                <form onsubmit="event.preventDefault(); prosesTambahChemical();" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Kategori Layanan</label>
+                            <select id="input_layanan" class="w-full text-xs bg-slate-800 border border-slate-700 rounded-lg p-2.5 outline-none text-white font-bold">
+                                <option value="sofa">🛋️ Sofa & Springbed</option>
+                                <option value="bayi">👶 Perlengkapan Bayi</option>
+                                <option value="sepatu">👟 Cuci Sepatu</option>
+                                <option value="karpet">⛺ Cuci Karpet</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Tanggal Kerja</label>
+                            <input type="date" id="input_tanggal" class="w-full text-xs bg-slate-800 border border-slate-700 rounded-lg p-2.5 outline-none text-white font-bold" required>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950/40 p-3 rounded-xl border border-slate-800 space-y-2">
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">Blessting ++</span>
+                            <div class="flex gap-1">
+                                <input type="number" step="0.01" id="chem_blessting_plus" class="w-16 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-blue-400">
+                                <select id="unit_blessting_plus" class="text-[10px] bg-slate-700 rounded border border-slate-600 p-1 text-white"><option value="ml">ml</option><option value="liter">L</option></select>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">Blessting Ori</span>
+                            <div class="flex gap-1">
+                                <input type="number" step="0.01" id="chem_blessting_ori" class="w-16 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-blue-400">
+                                <select id="unit_blessting_ori" class="text-[10px] bg-slate-700 rounded border border-slate-600 p-1 text-white"><option value="ml">ml</option><option value="liter">L</option></select>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">Sabun Biasa</span>
+                            <div class="flex gap-1">
+                                <input type="number" step="0.01" id="chem_sabun_biasa" class="w-16 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-blue-400">
+                                <select id="unit_sabun_biasa" class="text-[10px] bg-slate-700 rounded border border-slate-600 p-1 text-white"><option value="ml">ml</option><option value="liter">L</option></select>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">Sabun D10</span>
+                            <div class="flex gap-1">
+                                <input type="number" step="0.01" id="chem_sabun_d10" class="w-16 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-blue-400">
+                                <select id="unit_sabun_d10" class="text-[10px] bg-slate-700 rounded border border-slate-600 p-1 text-white"><option value="ml">ml</option><option value="liter">L</option></select>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">Penetral</span>
+                            <div class="flex gap-1 items-center">
+                                <input type="number" step="0.1" id="chem_penetral" class="w-16 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-blue-400">
+                                <span class="text-[10px] text-slate-400 px-1">Sendok</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">Pembilas</span>
+                            <div class="flex gap-1">
+                                <input type="number" step="0.01" id="chem_pembilas" class="w-16 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-blue-400">
+                                <select id="unit_pembilas" class="text-[10px] bg-slate-700 rounded border border-slate-600 p-1 text-white"><option value="ml">ml</option><option value="liter">L</option></select>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">H2</span>
+                            <div class="flex gap-1">
+                                <input type="number" step="0.01" id="chem_h2" class="w-16 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-blue-400">
+                                <select id="unit_h2" class="text-[10px] bg-slate-700 rounded border border-slate-600 p-1 text-white"><option value="ml">ml</option><option value="liter">L</option></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Hasil Kerja & Spesifikasi Item</label>
+                        <textarea id="input_hasil" rows="2" placeholder="Contoh: Selesai cuci 3 unit sofa kain..." class="w-full text-xs bg-slate-800 border border-slate-700 rounded-lg p-2.5 outline-none text-white" required></textarea>
+                    </div>
+
+                    <button type="submit" id="btnSimpanChem" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition-all">
+                        💾 SIMPAN DATA CHEMICAL
+                    </button>
+                </form>
+            </div>
+
+            <div class="glass-card p-5 sm:p-6 rounded-2xl shadow-xl bg-slate-900/60 border-t-4 border-t-emerald-500">
+                <div class="flex items-center gap-3 border-b border-slate-800 pb-3 mb-4">
+                    <div class="text-emerald-400 text-xl">📦</div>
+                    <div>
+                        <h2 class="text-sm font-bold text-white">Form B: Pemakaian Material Packing</h2>
+                        <p class="text-[11px] text-slate-400">Catat pembungkus plastik/wrapping mandiri di sini.</p>
+                    </div>
+                </div>
+                
+                <form onsubmit="event.preventDefault(); prosesTambahPacking();" class="space-y-4">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Tanggal Pengemasan</label>
+                        <input type="date" id="input_tanggal_pack" class="w-full text-xs bg-slate-800 border border-slate-700 rounded-lg p-2.5 outline-none text-white font-bold" required>
+                    </div>
+
+                    <div class="bg-slate-950/40 p-3 rounded-xl border border-slate-800 space-y-2">
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">Packaging Springbed</span>
+                            <div class="flex items-center gap-1.5">
+                                <input type="number" id="pack_springbed" placeholder="0" class="w-16 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-emerald-400">
+                                <span class="text-[10px] text-slate-400">Pcs</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">Wrapping Sofa</span>
+                            <div class="flex items-center gap-1.5">
+                                <input type="number" id="pack_sofa" placeholder="0" class="w-16 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-emerald-400">
+                                <span class="text-[10px] text-slate-400">Dudukan</span>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between items-center bg-slate-800/50 p-2 rounded-lg">
+                            <span class="text-xs font-bold">Plastik Karpet</span>
+                            <div class="flex gap-1 items-center">
+                                <input type="number" id="pack_karpet_qty" placeholder="0" class="w-14 bg-slate-900 border border-slate-700 rounded p-1 text-center text-xs font-bold text-emerald-400">
+                                <select id="pack_karpet_ukuran" class="text-[10px] bg-slate-700 rounded border border-slate-600 p-1 text-white font-bold">
+                                    <option value="Uk. 25">Uk. 25</option>
+                                    <option value="Uk. 35">Uk. 35</option>
+                                    <option value="Uk. 40">Uk. 40</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btnSimpanPack" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs cursor-pointer shadow-md transition-all">
+                        📦 SIMPAN DATA PACKING
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div id="panelMenu2" class="hidden space-y-6">
+            
+            <div class="space-y-2">
+                <span class="text-xs font-bold text-blue-400 uppercase tracking-wider block">📋 LOG TABEL CHEMICAL (BERDASARKAN LAYANAN)</span>
+                <div class="flex gap-1.5 overflow-x-auto pb-2 scrollbar-none">
+                    <button id="btnTab_sofa" onclick="pindahSubTabel('sofa')" class="subtab-active text-[11px] font-bold px-4 py-2.5 rounded-lg shrink-0 cursor-pointer">🛋️ Sofa & Springbed</button>
+                    <button id="btnTab_bayi" onclick="pindahSubTabel('bayi')" class="subtab-inactive text-[11px] font-bold px-4 py-2.5 rounded-lg shrink-0 cursor-pointer">👶 Perlengkapan Bayi</button>
+                    <button id="btnTab_sepatu" onclick="pindahSubTabel('sepatu')" class="subtab-inactive text-[11px] font-bold px-4 py-2.5 rounded-lg shrink-0 cursor-pointer">👟 Cuci Sepatu</button>
+                    <button id="btnTab_karpet" onclick="pindahSubTabel('karpet')" class="subtab-inactive text-[11px] font-bold px-4 py-2.5 rounded-lg shrink-0 cursor-pointer">⛺ Cuci Karpet</button>
+                </div>
+
+                <div class="glass-card rounded-xl border border-slate-700 overflow-hidden">
+                    <div class="bg-blue-900 px-3 py-2 border-b border-slate-700">
+                        <span id="judulTabel" class="text-xs font-black uppercase text-white">Laporan Tabel Harian: Sofa & Springbed</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-[11px] text-slate-300">
+                            <thead>
+                                <tr>
+                                    <th>TANGGAL</th>
+                                    <th>Blessting ++</th>
+                                    <th>Blessting Ori</th>
+                                    <th>Sabun Biasa</th>
+                                    <th>Sabun D10</th>
+                                    <th>Penetral</th>
+                                    <th>Pembilas</th>
+                                    <th>H2</th>
+                                    <th class="text-left px-3">Hasil Kerja & Spesifikasi Item</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabel_body_utama">
+                                <tr class="text-slate-500"><td colspan="9" class="p-6">Memuat data dari cloud database...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-2 pt-4 border-t border-slate-800">
+                <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider block">📦 LOG TABEL MATERIAL PACKING (MANDIRI)</span>
+                <div class="glass-card rounded-xl border border-slate-700 overflow-hidden">
+                    <div class="bg-emerald-900 px-3 py-2 border-b border-slate-700">
+                        <span class="text-xs font-black uppercase text-white">REKAP PEMAKAIAN PLASTIK & WRAPPING</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-[11px] text-slate-300">
+                            <thead>
+                                <tr class="bg-slate-950">
+                                    <th>TANGGAL PACKING</th>
+                                    <th class="text-emerald-300">PACK SPRINGBED</th>
+                                    <th class="text-emerald-300">WRAPPING SOFA</th>
+                                    <th class="text-emerald-300">PLASTIK KARPET</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabel_body_packing">
+                                <tr class="text-slate-500"><td colspan="4" class="p-4 text-center">Belum ada log pengemasan mandiri yang masuk.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="panelMenu3" class="hidden space-y-6 max-w-xl mx-auto">
+            
+            <div class="space-y-2">
+                <span class="text-xs font-black text-blue-400 tracking-wide uppercase">🧪 Ringkasan Chemical & Hari Kerja</span>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="glass-card p-4 rounded-xl border-l-4 border-l-blue-500 bg-slate-900/80">
+                        <span class="text-[9px] uppercase font-bold tracking-wider text-slate-400 block mb-1">Sofa & Springbed</span>
+                        <div class="flex items-baseline gap-1.5"><span id="dash_sofa_hari" class="text-xl font-black text-white">0</span><span class="text-[10px] text-slate-400">Hari</span></div>
+                        <span id="dash_sofa_chem" class="text-[11px] font-bold text-blue-400 block mt-1">0.00 L Blessting ++</span>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl border-l-4 border-l-emerald-500 bg-slate-900/80">
+                        <span class="text-[9px] uppercase font-bold tracking-wider text-slate-400 block mb-1">Perlengkapan Bayi</span>
+                        <div class="flex items-baseline gap-1.5"><span id="dash_bayi_hari" class="text-xl font-black text-white">0</span><span class="text-[10px] text-slate-400">Hari</span></div>
+                        <span id="dash_bayi_chem" class="text-[11px] font-bold text-emerald-400 block mt-1">0.00 L Blessting ++</span>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl border-l-4 border-l-amber-500 bg-slate-900/80">
+                        <span class="text-[9px] uppercase font-bold tracking-wider text-slate-400 block mb-1">Cuci Sepatu</span>
+                        <div class="flex items-baseline gap-1.5"><span id="dash_sepatu_hari" class="text-xl font-black text-white">0</span><span class="text-[10px] text-slate-400">Hari</span></div>
+                        <span id="dash_sepatu_chem" class="text-[11px] font-bold text-amber-400 block mt-1">0.00 L Blessting ++</span>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl border-l-4 border-l-purple-500 bg-slate-900/80">
+                        <span class="text-[9px] uppercase font-bold tracking-wider text-slate-400 block mb-1">Cuci Karpet</span>
+                        <div class="flex items-baseline gap-1.5"><span id="dash_karpet_hari" class="text-xl font-black text-white">0</span><span class="text-[10px] text-slate-400">Hari</span></div>
+                        <span id="dash_karpet_chem" class="text-[11px] font-bold text-purple-400 block mt-1">0.00 L Blessting ++</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-2 pt-2">
+                <span class="text-xs font-black text-emerald-400 tracking-wide uppercase">📦 Total Akumulasi Pemakaian Packing</span>
+                <div class="glass-card p-4 rounded-xl bg-slate-900/80 border border-slate-700 grid grid-cols-3 gap-2 text-center">
+                    <div>
+                        <span class="text-[9px] font-bold text-slate-400 block uppercase">Springbed</span>
+                        <span id="dash_total_spring" class="text-lg font-black text-emerald-400">0 Pcs</span>
+                    </div>
+                    <div class="border-x border-slate-800">
+                        <span class="text-[9px] font-bold text-slate-400 block uppercase">Wrap Sofa</span>
+                        <span id="dash_total_sofa" class="text-lg font-black text-emerald-400">0 Ddk</span>
+                    </div>
+                    <div>
+                        <span class="text-[9px] font-bold text-slate-400 block uppercase">Plastik Karpet</span>
+                        <span id="dash_total_karpet" class="text-lg font-black text-emerald-400">0 Pcs</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        document.getElementById('input_tanggal').value = new Date().toISOString().split('T')[0];
+        document.getElementById('input_tanggal_pack').value = new Date().toISOString().split('T')[0];
+
+        // API URL Google Apps Script Tetap Terjaga Akurat
+        const urlAppScript = "https://script.google.com/macros/s/AKfycbyK8s9cbtlY7Ol647j7MzAZBcVf5ZyDe4RLqvVzVbD9Lg8k6VRFgJaOG4cPE3j80bpFdA/exec";
+
+        let databaseUtama = {
+            sofa: { hari: 0, blesstingTotalLiter: 0, listData: [] },
+            bayi: { hari: 0, blesstingTotalLiter: 0, listData: [] },
+            sepatu: { hari: 0, blesstingTotalLiter: 0, listData: [] },
+            karpet: { hari: 0, blesstingTotalLiter: 0, listData: [] }
+        };
+        
+        let databasePacking = []; // Log Array Mandiri khusus material packing
+
+        let subTabelAktif = "sofa";
+
+        async function ambilDataDariSheets() {
+            try {
+                const res = await fetch(urlAppScript + "?action=readAll");
+                if (!res.ok) throw new Error();
+                const dataSpreedsheet = await res.json();
+                
+                if(dataSpreedsheet.databaseUtama) {
+                    databaseUtama = dataSpreedsheet.databaseUtama;
+                    databasePacking = dataSpreedsheet.databasePacking || [];
+                } else {
+                    databaseUtama = dataSpreedsheet;
+                }
+
+                // Render Dashboard & Hitungan Angka
+                for (let k in databaseUtama) {
+                    if (document.getElementById(`dash_${k}_hari`)) document.getElementById(`dash_${k}_hari`).innerText = databaseUtama[k].hari;
+                    if (document.getElementById(`dash_${k}_chem`)) document.getElementById(`dash_${k}_chem`).innerText = `${databaseUtama[k].blesstingTotalLiter.toFixed(2)} L Blessting ++`;
+                }
+
+                hitungDashboardPacking();
+                document.getElementById('teksKoneksi').innerText = "Sheets Connected";
+                renderTabelUtama();
+                renderTabelPacking();
+            } catch (err) {
+                console.warn("Mode database lokal diaktifkan.");
+                document.getElementById('teksKoneksi').innerText = "Local Session Mode";
+                document.getElementById('bulletKoneksi').className = "w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse";
+                renderTabelUtama();
+                renderTabelPacking();
+            }
+        }
+
+        function hitungDashboardPacking() {
+            let totalSpring = 0;
+            let totalSofa = 0;
+            let totalKarpet = 0;
+
+            databasePacking.forEach(p => {
+                if(p.pack_springbed && p.pack_springbed !== '-') totalSpring += parseInt(p.pack_springbed) || 0;
+                if(p.pack_sofa && p.pack_sofa !== '-') totalSofa += parseInt(p.pack_sofa) || 0;
+                if(p.pack_karpet && p.pack_karpet !== '-') totalKarpet += parseInt(p.pack_karpet) || 0;
+            });
+
+            document.getElementById('dash_total_spring').innerText = totalSpring + " Pcs";
+            document.getElementById('dash_total_sofa').innerText = totalSofa + " Ddk";
+            document.getElementById('dash_total_karpet').innerText = totalKarpet + " Pcs";
+        }
+
+        function pindahMenu(menuId) {
+            document.getElementById('panelMenu1').classList.add('hidden');
+            document.getElementById('panelMenu2').classList.add('hidden');
+            document.getElementById('panelMenu3').classList.add('hidden');
+            document.getElementById('btnMenu1').className = "tab-inactive py-3.5 text-xs font-bold rounded-xl text-center cursor-pointer hover:bg-slate-800";
+            document.getElementById('btnMenu2').className = "tab-inactive py-3.5 text-xs font-bold rounded-xl text-center cursor-pointer hover:bg-slate-800";
+            document.getElementById('btnMenu3').className = "tab-inactive py-3.5 text-xs font-bold rounded-xl text-center cursor-pointer hover:bg-slate-800";
+
+            if(menuId === 1) {
+                document.getElementById('panelMenu1').classList.remove('hidden');
+                document.getElementById('btnMenu1').className = "tab-active py-3.5 text-xs font-bold rounded-xl text-center cursor-pointer";
+            } else if(menuId === 2) {
+                document.getElementById('panelMenu2').classList.remove('hidden');
+                document.getElementById('btnMenu2').className = "tab-active py-3.5 text-xs font-bold rounded-xl text-center cursor-pointer";
+                renderTabelUtama();
+                renderTabelPacking();
+            } else if(menuId === 3) {
+                document.getElementById('panelMenu3').classList.remove('hidden');
+                document.getElementById('btnMenu3').className = "tab-active py-3.5 text-xs font-bold rounded-xl text-center cursor-pointer";
+            }
+        }
+
+        function pindahSubTabel(layananId) {
+            subTabelAktif = layananId;
+            document.getElementById('btnTab_sofa').className = "subtab-inactive text-[11px] font-bold px-4 py-2.5 rounded-lg shrink-0";
+            document.getElementById('btnTab_bayi').className = "subtab-inactive text-[11px] font-bold px-4 py-2.5 rounded-lg shrink-0";
+            document.getElementById('btnTab_sepatu').className = "subtab-inactive text-[11px] font-bold px-4 py-2.5 rounded-lg shrink-0";
+            document.getElementById('btnTab_karpet').className = "subtab-inactive text-[11px] font-bold px-4 py-2.5 rounded-lg shrink-0";
+            document.getElementById(`btnTab_${layananId}`).className = "subtab-active text-[11px] font-bold px-4 py-2.5 rounded-lg shrink-0";
+            
+            const namaLayanan = { sofa: "Sofa & Springbed", bayi: "Perlengkapan Bayi", sepatu: "Cuci Sepatu", karpet: "Cuci Karpet" };
+            document.getElementById('judulTabel').innerText = `Laporan Tabel Harian: ${namaLayanan[layananId]}`;
+            renderTabelUtama();
+        }
+
+        function formatTanggalIndo(rawDate) {
+            if(!rawDate) return "-";
+            if(rawDate.includes('/')) return rawDate;
+            const p = rawDate.split('-');
+            return `${p[2]}/${p[1]}/${p[0]}`;
+        }
+
+        function renderTabelUtama() {
+            const tbody = document.getElementById('tabel_body_utama');
+            tbody.innerHTML = "";
+            const dataKategori = databaseUtama[subTabelAktif].listData;
+
+            if(!dataKategori || dataKategori.length === 0) {
+                tbody.innerHTML = `<tr class="text-slate-500"><td colspan="9" class="p-4 text-center text-xs">Belum ada log data chemical di kategori ini.</td></tr>`;
+                return;
+            }
+
+            dataKategori.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "bg-slate-900/60 hover:bg-slate-800 transition-colors";
+                tr.innerHTML = `
+                    <td class="font-bold text-white">${formatTanggalIndo(item.tanggal)}</td>
+                    <td class="text-blue-400 font-bold">${item.b_plus || '-'}</td>
+                    <td>${item.b_ori || '-'}</td>
+                    <td>${item.sabun_biasa || '-'}</td>
+                    <td>${item.sabun_d10 || '-'}</td>
+                    <td class="text-amber-400 font-bold">${item.penetral || '-'}</td>
+                    <td>${item.pembilas || '-'}</td>
+                    <td>${item.h2 || '-'}</td>
+                    <td class="text-left px-3 font-semibold text-white">${item.hasil}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderTabelPacking() {
+            const tbody = document.getElementById('tabel_body_packing');
+            tbody.innerHTML = "";
+
+            if(databasePacking.length === 0) {
+                tbody.innerHTML = `<tr class="text-slate-500"><td colspan="4" class="p-6 text-center text-xs">Belum ada data material packing yang terekam.</td></tr>`;
+                return;
+            }
+
+            databasePacking.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.className = "bg-slate-900/40 hover:bg-slate-800/80 text-center";
+                tr.innerHTML = `
+                    <td class="font-bold text-slate-300">${formatTanggalIndo(p.tanggal)}</td>
+                    <td class="text-emerald-400 font-black">${p.pack_springbed || '-'}</td>
+                    <td class="text-emerald-400 font-black">${p.pack_sofa || '-'}</td>
+                    <td class="text-emerald-400 font-semibold">${p.pack_karpet || '-'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function kirimKeSheets(dataKirim) {
+            try {
+                await fetch(urlAppScript, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: new URLSearchParams(dataKirim)
+                });
+            } catch (error) {
+                console.error("Gagal sinkron cloud:", error);
+            }
+        }
+
+        // SUBMIT FORM A: CHEMICAL ONLY
+        function prosesTambahChemical() {
+            const btn = document.getElementById('btnSimpanChem');
+            btn.innerText = "🔄 MENYIMPAN FORM A CHEMICAL...";
+            btn.disabled = true;
+
+            const layanan = document.getElementById('input_layanan').value;
+            const tanggal = document.getElementById('input_tanggal').value;
+            const hasil = document.getElementById('input_hasil').value;
+
+            const b_plus = document.getElementById('chem_blessting_plus').value;
+            const u_plus = document.getElementById('unit_blessting_plus').value;
+            const b_ori = document.getElementById('chem_blessting_ori').value;
+            const u_ori = document.getElementById('unit_blessting_ori').value;
+            const sabun_biasa = document.getElementById('chem_sabun_biasa').value;
+            const u_biasa = document.getElementById('unit_sabun_biasa').value;
+            const sabun_d10 = document.getElementById('chem_sabun_d10').value;
+            const u_d10 = document.getElementById('unit_sabun_d10').value;
+            const penetral = document.getElementById('chem_penetral').value;
+            const pembilas = document.getElementById('chem_pembilas').value;
+            const u_pembilas = document.getElementById('unit_pembilas').value;
+            const h2 = document.getElementById('chem_h2').value;
+            const u_h2 = document.getElementById('unit_h2').value;
+
+            const val_b_plus = b_plus ? b_plus + " " + u_plus : '-';
+            const val_b_ori = b_ori ? b_ori + " " + u_ori : '-';
+            const val_biasa = sabun_biasa ? sabun_biasa + " " + u_biasa : '-';
+            const val_d10 = sabun_d10 ? sabun_d10 + " " + u_d10 : '-';
+            const val_penetral = penetral ? penetral + " Sdk" : '-'; 
+            const val_pembilas = pembilas ? pembilas + " " + u_pembilas : '-';
+            const val_h2 = h2 ? h2 + " " + u_h2 : '-';
+
+            const itemBaru = {
+                tanggal, b_plus: val_b_plus, b_ori: val_b_ori, sabun_biasa: val_biasa, sabun_d10: val_d10, penetral: val_penetral, pembilas: val_pembilas, h2: val_h2, hasil
+            };
+            
+            databaseUtama[layanan].listData.unshift(itemBaru);
+            databaseUtama[layanan].hari += 1;
+
+            if (b_plus) {
+                let nilaiBlessting = parseFloat(b_plus);
+                if (u_plus === 'ml') nilaiBlessting /= 1000;
+                databaseUtama[layanan].blesstingTotalLiter += nilaiBlessting;
+            }
+
+            document.getElementById(`dash_${layanan}_hari`).innerText = databaseUtama[layanan].hari;
+            document.getElementById(`dash_${layanan}_chem`).innerText = `${databaseUtama[layanan].blesstingTotalLiter.toFixed(2)} L Blessting ++`;
+
+            kirimKeSheets({
+                form_type: 'chemical_only',
+                layanan: layanan,
+                tanggal: formatTanggalIndo(tanggal),
+                b_plus: val_b_plus,
+                b_ori: val_b_ori,
+                sabun_biasa: val_biasa,
+                sabun_d10: val_d10,
+                penetral: val_penetral,
+                pembilas: val_pembilas,
+                h2: val_h2,
+                hasil: hasil
+            }).then(() => {
+                btn.innerText = "💾 SIMPAN DATA CHEMICAL";
+                btn.disabled = false;
+                alert(`✅ Sukses! Data Chemical ${layanan.toUpperCase()} masuk cloud.`);
+                
+                // Clear Form A
+                document.getElementById('chem_blessting_plus').value = "";
+                document.getElementById('chem_blessting_ori').value = "";
+                document.getElementById('chem_sabun_biasa').value = "";
+                document.getElementById('chem_sabun_d10').value = "";
+                document.getElementById('chem_penetral').value = "";
+                document.getElementById('chem_pembilas').value = "";
+                document.getElementById('chem_h2').value = "";
+                document.getElementById('input_hasil').value = "";
+                if(subTabelAktif === layanan) renderTabelUtama();
+            });
+        }
+
+        // SUBMIT FORM B: PACKING ONLY
+        function prosesTambahPacking() {
+            const btn = document.getElementById('btnSimpanPack');
+            btn.innerText = "🔄 MENYIMPAN FORM B PACKING...";
+            btn.disabled = true;
+
+            const tanggal = document.getElementById('input_tanggal_pack').value;
+            const springbed = document.getElementById('pack_springbed').value;
+            const sofa = document.getElementById('pack_sofa').value;
+            const k_qty = document.getElementById('pack_karpet_qty').value;
+            const k_uk = document.getElementById('pack_karpet_ukuran').value;
+
+            const val_spring = springbed ? springbed + " Pcs" : '-';
+            const val_sofa = sofa ? sofa + " Ddk" : '-'; 
+            const val_karpet = k_qty ? k_qty + " Pcs (" + k_uk + ")" : '-';
+
+            const packBaru = {
+                tanggal: tanggal,
+                pack_springbed: val_spring,
+                pack_sofa: val_sofa,
+                pack_karpet: val_karpet
+            };
+
+            databasePacking.unshift(packBaru);
+            hitungDashboardPacking();
+
+            kirimKeSheets({
+                form_type: 'packing_only',
+                tanggal: formatTanggalIndo(tanggal),
+                pack_springbed: val_spring,
+                pack_sofa: val_sofa,
+                pack_karpet: val_karpet
+            }).then(() => {
+                btn.innerText = "📦 SIMPAN DATA PACKING";
+                btn.disabled = false;
+                alert("✅ Sukses! Log Pemakaian Plastik & Wrapping Terupdate.");
+                
+                // Clear Form B
+                document.getElementById('pack_springbed').value = "";
+                document.getElementById('pack_sofa').value = "";
+                document.getElementById('pack_karpet_qty').value = "";
+                renderTabelPacking();
+            });
+        }
+    </script>
+</body>
+</html>
